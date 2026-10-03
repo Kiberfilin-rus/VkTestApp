@@ -3,4 +3,7 @@
     <string name="text_posta">"Text поста Text поста Text поста Text поста Text поста Text поста Text поста "</string>
     <string name="icon_description">Иконка</string>
     <string name="post_picture_description">Картинка поста</string>
+    <string name="navigation_item_main">Главная</string>
+    <string name="navigation_item_favourite">Избранное</string>
+    <string name="navigation_item_profile">Профиль</string>
 </resources>

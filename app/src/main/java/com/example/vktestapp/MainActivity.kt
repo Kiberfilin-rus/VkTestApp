@@ -23,10 +23,10 @@ class MainActivity : ComponentActivity() {
                     val finalPadding: PaddingValues = PaddingValues.Absolute(
                         top = innerPadding.calculateTopPadding() + 8.dp,
                         left = innerPadding.calculateLeftPadding(LocalLayoutDirection.current) + 8.dp,
-                        right = innerPadding.calculateRightPadding(LocalLayoutDirection.current) + 8.dp,
-                        bottom = innerPadding.calculateBottomPadding() + 8.dp
+                        right = innerPadding.calculateRightPadding(LocalLayoutDirection.current) + 8.dp
                     )
-                    PostCard(modifier = Modifier.padding(finalPadding))
+                    //PostCard(modifier = Modifier.padding(finalPadding))
+                    MainScreen(modifier = Modifier.padding(finalPadding))
                 }
             }
         }
