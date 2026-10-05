@@ -2,6 +2,7 @@ package com.example.vktestapp
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,10 +31,17 @@ import androidx.compose.ui.tooling.preview.AndroidUiModes.UI_MODE_NIGHT_YES
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.vktestapp.domain.FeedPost
+import com.example.vktestapp.domain.StatisticItem
+import com.example.vktestapp.domain.StatisticType
 import com.example.vktestapp.ui.theme.VkTestAppTheme
 
 @Composable
-fun PostCard(modifier: Modifier) {
+fun PostCard(
+    modifier: Modifier = Modifier,
+    feedPost: FeedPost,
+    onStatisticsItemClickListener: (StatisticItem) -> Unit
+) {
     Card(
         modifier = modifier
     ) {
@@ -42,18 +50,34 @@ fun PostCard(modifier: Modifier) {
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
-            ShapkaPosta()
+            ShapkaPosta(
+                pictureResId = feedPost.avatarResId,
+                groupName = feedPost.communityName,
+                date = feedPost.publicationDate
+            )
             Spacer(modifier = Modifier.height(8.dp))
-            TeloPosta()
+            TeloPosta(text = feedPost.contentText, feedPost.contentImageResId)
             Spacer(modifier = Modifier.height(8.dp))
-            PodvalPosta()
+            PodvalPosta(
+                statistics = feedPost.statistics,
+                onItemClickListener = onStatisticsItemClickListener
+            )
         }
     }
 }
 
 @Composable
-private fun Counter(drawableId: Int, count: String) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+private fun Counter(
+    drawableId: Int,
+    count: String,
+    onItemClickListener: () -> Unit
+) {
+    Row(
+        modifier = Modifier.clickable {
+            onItemClickListener()
+        },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Icon(
             modifier = Modifier.size(20.dp),
             painter = painterResource(drawableId),
@@ -73,46 +97,89 @@ private fun Counter(drawableId: Int, count: String) {
 @Composable
 fun ShowCounter() {
     VkTestAppTheme {
-        Counter(drawableId = R.drawable.ic_like, "43")
+        Counter(drawableId = R.drawable.ic_like, "43", onItemClickListener = {})
     }
 }
 
 @Composable
-private fun TeloPosta() {
+private fun TeloPosta(
+    text: String,
+    pictureResId: Int
+) {
     Text(
-        text = stringResource(R.string.text_posta),
+        text = text,
         color = MaterialTheme.colorScheme.onPrimary,
         lineHeight = 16.sp
     )
     Image(
         modifier = Modifier
             .fillMaxWidth()
+            .height(200.dp)
             .padding(top = 8.dp),
-        painter = painterResource(R.drawable.post_pic),
+        painter = painterResource(pictureResId),
         contentDescription = stringResource(R.string.post_picture_description),
         contentScale = ContentScale.FillWidth
     )
 }
 
 @Composable
-private fun PodvalPosta() {
+private fun PodvalPosta(
+    statistics: List<StatisticItem>,
+    onItemClickListener: (StatisticItem) -> Unit
+) {
     Row {
         Row(modifier = Modifier.weight(1f)) {
-            Counter(drawableId = R.drawable.ic_views_count, count = 916.toString())
+            val viewsItem = statistics.getItemByType(StatisticType.VIEWS)
+            Counter(
+                drawableId = R.drawable.ic_views_count,
+                count = viewsItem.count.toString(),
+                onItemClickListener = {
+                    onItemClickListener(viewsItem)
+                }
+            )
         }
         Row(
             modifier = Modifier.weight(1f),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Counter(drawableId = R.drawable.ic_share, count = 7.toString())
-            Counter(drawableId = R.drawable.ic_comment, count = 8.toString())
-            Counter(drawableId = R.drawable.ic_like, count = 23.toString())
+            val sharesItem = statistics.getItemByType(StatisticType.SHARES)
+            Counter(
+                drawableId = R.drawable.ic_share,
+                count = sharesItem.count.toString(),
+                onItemClickListener = {
+                    onItemClickListener(sharesItem)
+                }
+            )
+            val commentsItem = statistics.getItemByType(StatisticType.COMMENTS)
+            Counter(
+                drawableId = R.drawable.ic_comment,
+                count = commentsItem.count.toString(),
+                onItemClickListener = {
+                    onItemClickListener(commentsItem)
+                }
+            )
+            val likesItem = statistics.getItemByType(StatisticType.LIKES)
+            Counter(
+                drawableId = R.drawable.ic_like,
+                count = likesItem.count.toString(),
+                onItemClickListener = {
+                    onItemClickListener(likesItem)
+                }
+            )
         }
     }
 }
 
+private fun List<StatisticItem>.getItemByType(type: StatisticType): StatisticItem {
+    return this.find { it.type == type } ?: throw IllegalStateException()
+}
+
 @Composable
-private fun ShapkaPosta() {
+private fun ShapkaPosta(
+    pictureResId: Int,
+    groupName: String,
+    date: String
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -121,7 +188,7 @@ private fun ShapkaPosta() {
                 .size(50.dp)
                 .clip(shape = CircleShape)
                 .background(color = MaterialTheme.colorScheme.background),
-            painter = painterResource(R.drawable.comuniti_pic),
+            painter = painterResource(pictureResId),
             contentDescription = "Фотка сообщества"
         )
         Spacer(modifier = Modifier.width(8.dp))
@@ -129,12 +196,12 @@ private fun ShapkaPosta() {
             modifier = Modifier.weight(1f)
         ) {
             Text(
-                text = "Название группы вк",
+                text = groupName,
                 color = MaterialTheme.colorScheme.onPrimary
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "14:00",
+                text = date,
                 color = MaterialTheme.colorScheme.onSecondary
             )
         }
@@ -151,6 +218,6 @@ private fun ShapkaPosta() {
 @Composable
 fun ShowPostCard() {
     VkTestAppTheme {
-        PostCard(modifier = Modifier)
+        PostCard(modifier = Modifier, feedPost = FeedPost(), onStatisticsItemClickListener = {})
     }
 }
