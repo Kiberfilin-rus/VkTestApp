@@ -40,7 +40,10 @@ import com.example.vktestapp.ui.theme.VkTestAppTheme
 fun PostCard(
     modifier: Modifier = Modifier,
     feedPost: FeedPost,
-    onStatisticsItemClickListener: (StatisticItem) -> Unit
+    onLikeClickListener: (StatisticItem) -> Unit,
+    onShareClickListener: (StatisticItem) -> Unit,
+    onCommentClickListener: (StatisticItem) -> Unit,
+    onViewsClickListener: (StatisticItem) -> Unit
 ) {
     Card(
         modifier = modifier
@@ -60,7 +63,10 @@ fun PostCard(
             Spacer(modifier = Modifier.height(8.dp))
             PodvalPosta(
                 statistics = feedPost.statistics,
-                onItemClickListener = onStatisticsItemClickListener
+                onLikeClickListener = onLikeClickListener,
+                onShareClickListener = onShareClickListener,
+                onCommentClickListener = onCommentClickListener,
+                onViewsClickListener = onViewsClickListener
             )
         }
     }
@@ -125,7 +131,10 @@ private fun TeloPosta(
 @Composable
 private fun PodvalPosta(
     statistics: List<StatisticItem>,
-    onItemClickListener: (StatisticItem) -> Unit
+    onLikeClickListener: (StatisticItem) -> Unit,
+    onShareClickListener: (StatisticItem) -> Unit,
+    onCommentClickListener: (StatisticItem) -> Unit,
+    onViewsClickListener: (StatisticItem) -> Unit
 ) {
     Row {
         Row(modifier = Modifier.weight(1f)) {
@@ -134,7 +143,7 @@ private fun PodvalPosta(
                 drawableId = R.drawable.ic_views_count,
                 count = viewsItem.count.toString(),
                 onItemClickListener = {
-                    onItemClickListener(viewsItem)
+                    onViewsClickListener(viewsItem)
                 }
             )
         }
@@ -147,7 +156,7 @@ private fun PodvalPosta(
                 drawableId = R.drawable.ic_share,
                 count = sharesItem.count.toString(),
                 onItemClickListener = {
-                    onItemClickListener(sharesItem)
+                    onShareClickListener(sharesItem)
                 }
             )
             val commentsItem = statistics.getItemByType(StatisticType.COMMENTS)
@@ -155,7 +164,7 @@ private fun PodvalPosta(
                 drawableId = R.drawable.ic_comment,
                 count = commentsItem.count.toString(),
                 onItemClickListener = {
-                    onItemClickListener(commentsItem)
+                    onCommentClickListener(commentsItem)
                 }
             )
             val likesItem = statistics.getItemByType(StatisticType.LIKES)
@@ -163,7 +172,7 @@ private fun PodvalPosta(
                 drawableId = R.drawable.ic_like,
                 count = likesItem.count.toString(),
                 onItemClickListener = {
-                    onItemClickListener(likesItem)
+                    onLikeClickListener(likesItem)
                 }
             )
         }
@@ -218,6 +227,6 @@ private fun ShapkaPosta(
 @Composable
 fun ShowPostCard() {
     VkTestAppTheme {
-        PostCard(modifier = Modifier, feedPost = FeedPost(), onStatisticsItemClickListener = {})
+        PostCard(modifier = Modifier, feedPost = FeedPost(), {}, {}, {}, {})
     }
 }

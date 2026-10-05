@@ -9,6 +9,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -18,12 +19,10 @@ import androidx.compose.ui.tooling.preview.AndroidUiModes.UI_MODE_NIGHT_YES
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.vktestapp.domain.FeedPost
-import com.example.vktestapp.domain.StatisticItem
 import com.example.vktestapp.ui.theme.VkTestAppTheme
 
 @Composable
-fun MainScreen(modifier: Modifier) {
-    val feedPostState = remember { mutableStateOf(FeedPost()) }
+fun MainScreen(modifier: Modifier, viewModel: MainViewModel) {
     Scaffold(
         modifier = modifier,
         bottomBar = {
@@ -51,26 +50,16 @@ fun MainScreen(modifier: Modifier) {
             }
         }
     ) { paddingValues ->
+        val feedPostState = viewModel.feedPost.observeAsState(FeedPost())
         PostCard(
             modifier = Modifier
                 .padding(paddingValues)
                 .padding(horizontal = 8.dp, vertical = 4.dp),
             feedPost = feedPostState.value,
-            onStatisticsItemClickListener = { newItem: StatisticItem ->
-                val oldStatistics = feedPostState.value.statistics
-                val newStatistics = oldStatistics.toMutableList().apply {
-                    replaceAll { oldItem: StatisticItem ->
-                        if (oldItem.type == newItem.type) {
-                            oldItem.copy(
-                                count = oldItem.count + 1
-                            )
-                        } else {
-                            oldItem
-                        }
-                    }
-                }
-                feedPostState.value = feedPostState.value.copy(statistics = newStatistics)
-            }
+            onLikeClickListener = viewModel::updateCount,
+            onShareClickListener = viewModel::updateCount,
+            onCommentClickListener = viewModel::updateCount,
+            onViewsClickListener = viewModel::updateCount
         )
     }
 }
@@ -80,6 +69,6 @@ fun MainScreen(modifier: Modifier) {
 @Composable
 fun ShowMainScreen() {
     VkTestAppTheme {
-        MainScreen(modifier = Modifier)
+        MainScreen(modifier = Modifier, viewModel = MainViewModel())
     }
 }
