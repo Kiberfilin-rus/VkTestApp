@@ -3,6 +3,7 @@ package com.example.vktestapp.domain
 import com.example.vktestapp.R
 
 data class FeedPost(
+    val id: Int = 0,
     val communityName: String = "Название группы вк",
     val publicationDate: String = "05.10.2026",
     val avatarResId: Int = R.drawable.comuniti_pic,
