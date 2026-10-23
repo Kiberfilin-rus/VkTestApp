@@ -28,6 +28,13 @@ class MainViewModel : ViewModel() {
     }
     private val _feedPosts = MutableLiveData<List<FeedPost>>(initialList)
     val feedPosts: LiveData<List<FeedPost>> = _feedPosts
+    private val _selectedNavItem: MutableLiveData<NavigationItem> =
+        MutableLiveData(NavigationItem.Home)
+    val selectedNavItem: LiveData<NavigationItem> = _selectedNavItem
+
+    fun selectNavItem(item: NavigationItem) {
+        _selectedNavItem.value = item
+    }
 
     fun updateCount(item: StatisticItem) {
         val oldPost = feedPosts.value?.find {
